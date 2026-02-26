@@ -1,0 +1,19 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start OpenCode",
+      "type": "shell",
+      "command": "while [ ! -f \"$HOME/.opencode/bin/opencode\" ]; do echo 'Waiting for OpenCode installation...'; sleep 2; done; export PATH=\"$HOME/.opencode/bin:$PATH\"; opencode",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "focus": true
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      },
+      "problemMatcher": []
+    }
+  ]
+}
