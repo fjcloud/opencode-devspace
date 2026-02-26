@@ -36,4 +36,4 @@ export GEMINI_API_KEY="your-key"
 
 - **Universal Developer Image** (UDI) with common development tools
 - **OpenCode** AI coding agent, auto-installed on workspace start
-- **VS Code task** that auto-launches OpenCode when the workspace opens
+- **Terminal profile** that launches OpenCode when you open a terminal (select "bash" for a regular shell)
