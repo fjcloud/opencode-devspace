@@ -3,19 +3,7 @@
   "workbench.tips.enabled": false,
   "workbench.welcomePage.walkthroughs.openOnInstall": false,
   "workbench.colorTheme": "Default Dark Modern",
-  "workbench.activityBar.visible": false,
-  "workbench.statusBar.visible": false,
+  "workbench.panel.opensMaximized": "always",
   "editor.minimap.enabled": false,
-  "terminal.integrated.profiles.linux": {
-    "OpenCode": {
-      "path": "/bin/bash",
-      "args": ["-c", "export PATH=$HOME/.opencode/bin:$PATH; while [ ! -f $HOME/.opencode/bin/opencode ]; do printf '\\rInstalling OpenCode...'; sleep 2; done; clear; opencode; exec bash -l"],
-      "overrideName": true
-    },
-    "bash": {
-      "path": "/bin/bash",
-      "icon": "terminal-bash"
-    }
-  },
-  "terminal.integrated.defaultProfile.linux": "OpenCode"
+  "task.allowAutomaticTasks": "on"
 }
