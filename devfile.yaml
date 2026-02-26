@@ -17,20 +17,20 @@ components:
         - name: SHELL
           value: /bin/bash
 commands:
-  - id: install-opencode
+  - id: setup-opencode
     exec:
       component: dev
       commandLine: |
-        curl -fsSL https://opencode.ai/install | bash &&
-        echo 'export PATH="$HOME/.opencode/bin:$PATH"' >> "$HOME/.bashrc"
-      workingDir: ${PROJECT_SOURCE}
-  - id: run-opencode
-    exec:
-      component: dev
-      commandLine: |
-        export PATH="$HOME/.opencode/bin:$PATH" &&
-        opencode
+        curl -fsSL https://opencode.ai/install | bash
+        cat > "$HOME/.opencode-init.sh" << 'INITEOF'
+        export PATH="$HOME/.opencode/bin:$PATH"
+        if [ ! -f /tmp/.opencode-launched ] && command -v opencode &>/dev/null; then
+          touch /tmp/.opencode-launched
+          opencode
+        fi
+        INITEOF
+        grep -q opencode-init "$HOME/.bashrc" 2>/dev/null || echo '[ -f "$HOME/.opencode-init.sh" ] && source "$HOME/.opencode-init.sh"' >> "$HOME/.bashrc"
       workingDir: ${PROJECT_SOURCE}
 events:
   postStart:
-    - install-opencode
+    - setup-opencode
