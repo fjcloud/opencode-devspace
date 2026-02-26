@@ -6,11 +6,12 @@ The cluster is OpenShift 4.x on AWS, accessed via `oc` CLI (already authenticate
 ## Project layout
 
 - `src/` — all application source code lives here
+- `deploy/` — Kubernetes/OpenShift manifests (Kustomize-ready, GitOps-compatible)
 - `opencode.json` — OpenCode config (model, provider)
 - `devfile.yaml` — DevWorkspace definition
 - `AGENTS.md` — this file
 
-Always create new code under `src/`. Keep the repo root clean.
+Always create new code under `src/` and deployment manifests under `deploy/`. Keep the repo root clean.
 
 ## Development workflow
 
@@ -38,14 +39,30 @@ Always create new code under `src/`. Keep the repo root clean.
 
 ## Kubernetes manifests
 
-Place manifests in `src/k8s/` or alongside the app in `src/`. Minimal set:
+Place all manifests in `deploy/`. Structure for Kustomize:
+
+```
+deploy/
+  base/           # shared manifests
+    kustomization.yaml
+    deployment.yaml
+    service.yaml
+    route.yaml
+  overlays/       # per-environment overrides
+    dev/
+      kustomization.yaml
+    prod/
+      kustomization.yaml
+```
+
+Minimal resource set:
 
 - `Deployment` with health probes (readiness + liveness)
 - `Service` (ClusterIP)
 - `Route` (for external access)
 - `ConfigMap` / `Secret` for configuration (never hardcode secrets)
 
-Use YAML, not JSON, for manifests. Keep them simple and readable.
+Use YAML, not JSON. Deploy with `oc apply -k deploy/overlays/dev`.
 
 ## Testing and validation
 
