@@ -1,3 +1,8 @@
 {
-  "task.allowAutomaticTasks": "on"
+  "task.allowAutomaticTasks": "on",
+  "workbench.startupEditor": "none",
+  "workbench.panel.opensMaximized": "always",
+  "workbench.tips.enabled": false,
+  "workbench.welcomePage.walkthroughs.openOnInstall": false,
+  "workbench.colorTheme": "Default Dark Modern"
 }
