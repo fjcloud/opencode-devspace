@@ -40,8 +40,8 @@ This ensures all three environments and the build pipeline exist from day one �
 ## Development workflow
 
 1. Write code in `src/`
-2. Test locally with `podman build` / `podman run` — podman is available in the container for quick local validation only
-3. Build on-cluster: `oc start-build ${APP} --from-dir=src/ -n ${APP}-build --follow`
+2. Validate locally first with `podman build -t ${APP}:test src/` then `podman run --rm -p 8080:8080 ${APP}:test` — fast feedback loop, catches Dockerfile errors before wasting cluster build time
+3. Once local build passes, build on-cluster: `oc start-build ${APP} --from-dir=src/ -n ${APP}-build --follow`
 4. Deploy to dev: `oc apply -k deploy/overlays/dev -n ${APP}-dev`
 5. Verify: `oc rollout status`, `oc logs`, `oc get routes`
 6. When dev is validated, promote to stage then prod by tagging (never rebuild):
@@ -51,7 +51,7 @@ This ensures all three environments and the build pipeline exist from day one �
    ```
 7. Deploy stage/prod: `oc apply -k deploy/overlays/stage -n ${APP}-stage` / `oc apply -k deploy/overlays/prod -n ${APP}-prod`
 
-**Important**: Never push locally-built images. All production-path images MUST be built in `${APP}-build` using `oc`. Local `podman build` is strictly for testing the Dockerfile before triggering the real build.
+**Important**: The local `podman build` is for quick iteration only. All deployable images MUST be built in `${APP}-build` via `oc start-build`. Never push or deploy a locally-built image.
 
 ## Namespace strategy
 
@@ -93,6 +93,23 @@ This way the image field is automatically resolved and updated by OpenShift — 
 - Never run as root — use `USER 1001` and support arbitrary user IDs (OpenShift restricted SCC)
 - Expose only necessary ports
 - One process per container — no supervisor hacks
+
+### Red Hat registry authentication
+
+Many Red Hat images (`registry.redhat.io/*`) require authentication. This affects both local and on-cluster builds:
+
+- **Local (podman)**: log in first with `podman login registry.redhat.io` — use your Red Hat account or a service account token from https://access.redhat.com/terms-based-registry/
+- **On-cluster (oc build)**: OpenShift nodes on ROSA/OCP already have pull secrets for `registry.redhat.io` via the global pull secret. If a build fails with `unauthorized`, check that the cluster pull secret is configured: `oc get secret/pull-secret -n openshift-config`
+- **Prefer `registry.access.redhat.com`** (no auth required) over `registry.redhat.io` when both provide the same image. For example, use `registry.access.redhat.com/ubi9/ubi-minimal` instead of `registry.redhat.io/ubi9/ubi-minimal`
+- If an image is only available on `registry.redhat.io`, link the pull secret to the builder service account in the build namespace:
+  ```bash
+  oc create secret docker-registry rh-registry \
+    --docker-server=registry.redhat.io \
+    --docker-username='<user>' \
+    --docker-password='<token>' \
+    -n ${APP}-build
+  oc secrets link builder rh-registry -n ${APP}-build
+  ```
 
 ## Kubernetes manifests
 
