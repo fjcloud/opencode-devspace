@@ -123,13 +123,6 @@ Configuration MUST be external to the image:
 - Expose a `/health` and `/ready` endpoint for probes
 - Set up alerts on error rates, latency, and resource usage
 
-## Security
-
-- Stick to the restricted SCC — never request privileged or anyuid
-- Use TLS between components if traffic carries sensitive data
-- Never store secrets in images, env vars in Dockerfiles, or Git
-- Scan images for vulnerabilities in CI before deploying
-
 ## Testing and validation
 
 - Run unit tests locally before deploying: use the language's test runner
