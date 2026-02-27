@@ -16,7 +16,7 @@ Always create new code under `src/` and deployment manifests under `deploy/`. Ke
 ## Development workflow
 
 1. Write code in `src/`
-2. Build and test locally inside the container before deploying
+2. Build and test locally with `podman build` / `podman run` — podman is available in the container, use it instead of installing extra tooling
 3. Deploy to OpenShift with `oc apply -k deploy/overlays/dev`
 4. Verify with `oc rollout status`, `oc logs`, `oc get routes`
 5. Iterate — the same image tested in dev must be promoted to prod unchanged
