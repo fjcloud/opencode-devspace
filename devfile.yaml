@@ -17,7 +17,7 @@ components:
         - name: SHELL
           value: /bin/bash
 commands:
-  - id: setup-opencode
+  - id: install-opencode
     exec:
       component: dev
       commandLine: >-
@@ -25,45 +25,6 @@ commands:
         grep -q '.opencode/bin' "$HOME/.bashrc" 2>/dev/null ||
         echo 'export PATH="$HOME/.opencode/bin:$PATH"' >> "$HOME/.bashrc"
       workingDir: ${PROJECT_SOURCE}
-  - id: setup-ide
-    exec:
-      component: dev
-      commandLine: |
-        cat > /tmp/vscode-cm.yaml << 'EOF'
-        apiVersion: v1
-        kind: ConfigMap
-        metadata:
-          name: vscode-editor-configurations
-          labels:
-            app.kubernetes.io/part-of: che.eclipse.org
-        data:
-          settings.json: |
-            {
-              "workbench.startupEditor": "none",
-              "workbench.tips.enabled": false,
-              "workbench.welcomePage.walkthroughs.openOnInstall": false,
-              "workbench.colorTheme": "Default Dark Modern",
-              "workbench.panel.opensMaximized": "always",
-              "workbench.activityBar.visible": false,
-              "workbench.statusBar.visible": false,
-              "editor.minimap.enabled": false,
-              "task.allowAutomaticTasks": "on"
-            }
-          product.json: |
-            {
-              "configurationDefaults": {
-                "workbench.startupEditor": "none"
-              }
-            }
-        EOF
-        if ! oc get configmap vscode-editor-configurations -o name 2>/dev/null; then
-          oc apply -f /tmp/vscode-cm.yaml
-          oc delete pod "$HOSTNAME" --grace-period=3 2>/dev/null || true
-        else
-          oc apply -f /tmp/vscode-cm.yaml
-        fi
-      workingDir: ${PROJECT_SOURCE}
 events:
   postStart:
-    - setup-opencode
-    - setup-ide
+    - install-opencode
