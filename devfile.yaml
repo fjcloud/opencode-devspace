@@ -56,7 +56,12 @@ commands:
               }
             }
         EOF
-        oc apply -f /tmp/vscode-cm.yaml
+        if ! oc get configmap vscode-editor-configurations -o name 2>/dev/null; then
+          oc apply -f /tmp/vscode-cm.yaml
+          oc delete pod "$HOSTNAME" --grace-period=3 2>/dev/null || true
+        else
+          oc apply -f /tmp/vscode-cm.yaml
+        fi
       workingDir: ${PROJECT_SOURCE}
 events:
   postStart:
