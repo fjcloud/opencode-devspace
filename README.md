@@ -23,7 +23,7 @@ oc wait checluster/devspaces -n openshift-operators --for=jsonpath='{.status.che
 Get your workspace URL:
 
 ```bash
-oc get checluster devspaces -n openshift-operators -o jsonpath='{.status.cheURL}' | xargs -I{} echo "{}/#https://github.com/fjcloud/opencode-devspace"
+echo "$(oc get checluster devspaces -n openshift-operators -o jsonpath='{.status.cheURL}')/#https://github.com/fjcloud/opencode-devspace"
 ```
 
 Open the resulting link in your browser.
