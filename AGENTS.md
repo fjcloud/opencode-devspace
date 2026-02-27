@@ -58,7 +58,7 @@ oc tag <app>-build/<image>:stage  <app>-build/<image>:prod
 ## OpenShift conventions
 
 - Use `oc` (not `kubectl`) — it has OpenShift-specific commands (routes, builds, etc.)
-- Expose services with `oc expose svc/<name>` to create a Route
+- Always create edge-terminated TLS Routes: `oc create route edge <name> --service=<svc>` (never plain HTTP)
 - Check cluster state before deploying: `oc project`, `oc status`
 - For container builds on-cluster, prefer `oc new-build` or a Dockerfile BuildConfig
 
