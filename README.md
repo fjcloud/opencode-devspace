@@ -8,8 +8,8 @@ Install the Dev Spaces operator and create the instance:
 # 1. Install the operator
 oc apply -k https://github.com/fjcloud/opencode-devspace/deploy/prereq/operator
 
-# 2. Wait for the CRD to be available
-oc wait crd/checlusters.org.eclipse.che --for=condition=Established --timeout=300s
+# 2. Wait for the operator to be ready (CRD + webhook endpoint)
+oc wait deployment/devspaces-operator -n openshift-operators --for=condition=Available --timeout=300s
 
 # 3. Create the instance
 oc apply -k https://github.com/fjcloud/opencode-devspace/deploy/prereq/instance
