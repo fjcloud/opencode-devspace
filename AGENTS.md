@@ -13,20 +13,49 @@ The cluster is OpenShift 4.x on AWS, accessed via `oc` CLI (already authenticate
 
 Always create new code under `src/` and deployment manifests under `deploy/`. Keep the repo root clean.
 
+## Bootstrap — first thing to do for a new app
+
+Before writing any code, create the four namespaces and wire up image pull permissions:
+
+```bash
+APP=<app>
+oc new-project ${APP}-build
+oc new-project ${APP}-dev
+oc new-project ${APP}-stage
+oc new-project ${APP}-prod
+
+for ns in ${APP}-dev ${APP}-stage ${APP}-prod; do
+  oc policy add-role-to-user system:image-puller system:serviceaccount:${ns}:default -n ${APP}-build
+done
+```
+
+Then scaffold the full Kustomize structure under `deploy/` (base + dev/stage/prod overlays) and create the BuildConfig in the build namespace:
+
+```bash
+oc new-build --name=${APP} --binary --strategy=docker -n ${APP}-build
+```
+
+This ensures all three environments and the build pipeline exist from day one — not as an afterthought.
+
 ## Development workflow
 
 1. Write code in `src/`
 2. Test locally with `podman build` / `podman run` — podman is available in the container for quick local validation only
-3. Build on-cluster with `oc new-build` or `oc start-build` in the `<app>-build` namespace — this is the real build, not local
-4. Deploy to OpenShift with `oc apply -k deploy/overlays/dev`
-5. Verify with `oc rollout status`, `oc logs`, `oc get routes`
-6. Iterate — the same image built in `<app>-build` is promoted to prod unchanged
+3. Build on-cluster: `oc start-build ${APP} --from-dir=src/ -n ${APP}-build --follow`
+4. Deploy to dev: `oc apply -k deploy/overlays/dev -n ${APP}-dev`
+5. Verify: `oc rollout status`, `oc logs`, `oc get routes`
+6. When dev is validated, promote to stage then prod by tagging (never rebuild):
+   ```bash
+   oc tag ${APP}-build/${APP}:latest ${APP}-build/${APP}:stage
+   oc tag ${APP}-build/${APP}:stage  ${APP}-build/${APP}:prod
+   ```
+7. Deploy stage/prod: `oc apply -k deploy/overlays/stage -n ${APP}-stage` / `oc apply -k deploy/overlays/prod -n ${APP}-prod`
 
-**Important**: Never push locally-built images. All production-path images MUST be built in the `<app>-build` namespace using `oc`. Local `podman build` is strictly for testing the Dockerfile before triggering the real build.
+**Important**: Never push locally-built images. All production-path images MUST be built in `${APP}-build` using `oc`. Local `podman build` is strictly for testing the Dockerfile before triggering the real build.
 
 ## Namespace strategy
 
-Four namespaces per application:
+Four namespaces per application (created during bootstrap):
 
 | Namespace | Purpose |
 |-----------|---------|
@@ -34,20 +63,6 @@ Four namespaces per application:
 | `<app>-dev` | Development environment. Pulls images from `<app>-build`. |
 | `<app>-stage` | Staging / QA. Pulls images from `<app>-build`. |
 | `<app>-prod` | Production. Pulls images from `<app>-build`. |
-
-Setup:
-
-```bash
-oc new-project <app>-build
-oc new-project <app>-dev
-oc new-project <app>-stage
-oc new-project <app>-prod
-
-# Grant each environment pull access to the build registry
-for ns in <app>-dev <app>-stage <app>-prod; do
-  oc policy add-role-to-user system:image-puller system:serviceaccount:${ns}:default -n <app>-build
-done
-```
 
 Every Deployment MUST use the `image.openshift.io/triggers` annotation to auto-deploy when an ImageStream tag is updated:
 
@@ -59,16 +74,7 @@ metadata:
         "fieldPath":"spec.template.spec.containers[?(@.name==\"<container>\")].image"}]
 ```
 
-This way the image field is automatically resolved and updated by OpenShift — no hardcoded registry URLs.
-
-Promotion is done by tagging, not rebuilding:
-
-```bash
-oc tag <app>-build/<image>:latest <app>-build/<image>:stage
-oc tag <app>-build/<image>:stage  <app>-build/<image>:prod
-```
-
-When a tag is updated, the trigger annotation rolls out the new image automatically.
+This way the image field is automatically resolved and updated by OpenShift — no hardcoded registry URLs. When a tag is updated, the trigger annotation rolls out the new image automatically.
 
 ## OpenShift conventions
 
@@ -108,7 +114,7 @@ deploy/
       kustomization.yaml
 ```
 
-Deploy per environment:
+Deploy per environment (see workflow for the full sequence):
 
 ```bash
 oc apply -k deploy/overlays/dev   -n <app>-dev
