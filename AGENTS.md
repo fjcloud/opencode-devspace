@@ -116,17 +116,6 @@ Configuration MUST be external to the image:
 - Use `Secret` for credentials (never hardcode)
 - The same image is promoted from dev to prod — only config changes per environment
 
-## Resilience
-
-When building HTTP services, implement:
-
-- Timeouts on all outbound calls
-- Retries with backoff for transient failures
-- Circuit breakers to avoid cascading failures
-- Rate limiting to protect against overload
-
-Consider OpenShift Service Mesh for cross-cutting concerns without code changes.
-
 ## Observability
 
 - Write logs to stdout/stderr — OpenShift collects them automatically
