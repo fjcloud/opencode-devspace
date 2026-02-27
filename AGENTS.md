@@ -94,21 +94,26 @@ This way the image field is automatically resolved and updated by OpenShift — 
 - Expose only necessary ports
 - One process per container — no supervisor hacks
 
-### Red Hat registry authentication
+### OpenShift UID and file permissions
 
-Many Red Hat images (`registry.redhat.io/*`) require authentication. This affects both local and on-cluster builds:
+OpenShift runs containers with a **random UID** (restricted SCC). Most permission errors come from files/directories in the image that only root can write to. Every Dockerfile MUST handle this:
 
-- **Local (podman)**: log in first with `podman login registry.redhat.io` — use your Red Hat account or a service account token from https://access.redhat.com/terms-based-registry/
-- **On-cluster (oc build)**: OpenShift nodes on ROSA/OCP already have pull secrets for `registry.redhat.io` via the global pull secret. If a build fails with `unauthorized`, check that the cluster pull secret is configured: `oc get secret/pull-secret -n openshift-config`
-- **Prefer `registry.access.redhat.com`** (no auth required) over `registry.redhat.io` when both provide the same image. For example, use `registry.access.redhat.com/ubi9/ubi-minimal` instead of `registry.redhat.io/ubi9/ubi-minimal`
-- If an image is only available on `registry.redhat.io`, link the pull secret to the builder service account in the build namespace:
+- Set `USER 1001` — never run as root
+- Any directory the app writes to at runtime must be writable by the root **group** (GID 0), because OpenShift assigns a random UID but always GID 0:
+  ```dockerfile
+  RUN chown -R 1001:0 /app && chmod -R g=u /app
+  ```
+- For temp/cache/log directories, same pattern:
+  ```dockerfile
+  RUN mkdir -p /app/tmp /app/logs && \
+      chown -R 1001:0 /app/tmp /app/logs && \
+      chmod -R g=u /app/tmp /app/logs
+  ```
+- Never write to `/etc/passwd` or `/etc/group` at runtime — if the app needs the UID to resolve, use an `nss_wrapper` or add an `entrypoint.sh` that creates the user entry dynamically
+- If the base image (e.g. nginx, redis) expects to run as root or a specific UID, check Red Hat's version (`registry.access.redhat.com/ubi9/...`) which is already adapted for arbitrary UIDs
+- Test locally with a random UID to catch permission issues early:
   ```bash
-  oc create secret docker-registry rh-registry \
-    --docker-server=registry.redhat.io \
-    --docker-username='<user>' \
-    --docker-password='<token>' \
-    -n ${APP}-build
-  oc secrets link builder rh-registry -n ${APP}-build
+  podman run --rm --user 1000620000:0 ${APP}:test
   ```
 
 ## Kubernetes manifests
