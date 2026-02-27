@@ -21,10 +21,43 @@ Always create new code under `src/` and deployment manifests under `deploy/`. Ke
 4. Verify with `oc rollout status`, `oc logs`, `oc get routes`
 5. Iterate — the same image tested in dev must be promoted to prod unchanged
 
+## Namespace strategy
+
+Four namespaces per application:
+
+| Namespace | Purpose |
+|-----------|---------|
+| `<app>-build` | BuildConfig + ImageStream. Images are built and pushed here. |
+| `<app>-dev` | Development environment. Pulls images from `<app>-build`. |
+| `<app>-stage` | Staging / QA. Pulls images from `<app>-build`. |
+| `<app>-prod` | Production. Pulls images from `<app>-build`. |
+
+Setup:
+
+```bash
+oc new-project <app>-build
+oc new-project <app>-dev
+oc new-project <app>-stage
+oc new-project <app>-prod
+
+# Grant each environment pull access to the build registry
+for ns in <app>-dev <app>-stage <app>-prod; do
+  oc policy add-role-to-user system:image-puller system:serviceaccount:${ns}:default -n <app>-build
+done
+```
+
+Image reference in Deployments: `image-registry.openshift-image-registry.svc:5000/<app>-build/<image>:<tag>`
+
+Promotion is done by tagging, not rebuilding:
+
+```bash
+oc tag <app>-build/<image>:latest <app>-build/<image>:stage
+oc tag <app>-build/<image>:stage  <app>-build/<image>:prod
+```
+
 ## OpenShift conventions
 
 - Use `oc` (not `kubectl`) — it has OpenShift-specific commands (routes, builds, etc.)
-- Create a dedicated namespace per app: `oc new-project <name>` or use the current one
 - Expose services with `oc expose svc/<name>` to create a Route
 - Check cluster state before deploying: `oc project`, `oc status`
 - For container builds on-cluster, prefer `oc new-build` or a Dockerfile BuildConfig
@@ -53,11 +86,19 @@ deploy/
   overlays/
     dev/
       kustomization.yaml
+    stage/
+      kustomization.yaml
     prod/
       kustomization.yaml
 ```
 
-Deploy with `oc apply -k deploy/overlays/dev`.
+Deploy per environment:
+
+```bash
+oc apply -k deploy/overlays/dev   -n <app>-dev
+oc apply -k deploy/overlays/stage -n <app>-stage
+oc apply -k deploy/overlays/prod  -n <app>-prod
+```
 
 ## Manifest requirements
 
