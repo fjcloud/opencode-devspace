@@ -16,10 +16,13 @@ Always create new code under `src/` and deployment manifests under `deploy/`. Ke
 ## Development workflow
 
 1. Write code in `src/`
-2. Build and test locally with `podman build` / `podman run` — podman is available in the container, use it instead of installing extra tooling
-3. Deploy to OpenShift with `oc apply -k deploy/overlays/dev`
-4. Verify with `oc rollout status`, `oc logs`, `oc get routes`
-5. Iterate — the same image tested in dev must be promoted to prod unchanged
+2. Test locally with `podman build` / `podman run` — podman is available in the container for quick local validation only
+3. Build on-cluster with `oc new-build` or `oc start-build` in the `<app>-build` namespace — this is the real build, not local
+4. Deploy to OpenShift with `oc apply -k deploy/overlays/dev`
+5. Verify with `oc rollout status`, `oc logs`, `oc get routes`
+6. Iterate — the same image built in `<app>-build` is promoted to prod unchanged
+
+**Important**: Never push locally-built images. All production-path images MUST be built in the `<app>-build` namespace using `oc`. Local `podman build` is strictly for testing the Dockerfile before triggering the real build.
 
 ## Namespace strategy
 
@@ -72,7 +75,8 @@ When a tag is updated, the trigger annotation rolls out the new image automatica
 - Use `oc` (not `kubectl`) — it has OpenShift-specific commands (routes, builds, etc.)
 - Always create edge-terminated TLS Routes: `oc create route edge <name> --service=<svc>` (never plain HTTP)
 - Check cluster state before deploying: `oc project`, `oc status`
-- For container builds on-cluster, prefer `oc new-build` or a Dockerfile BuildConfig
+- Always build images on-cluster in `<app>-build` using `oc new-build --name=<app> --binary -n <app>-build` then `oc start-build <app> --from-dir=src/ -n <app>-build --follow`
+- Local `podman build` is for testing only — never use it to produce deployable images
 
 ## Containerization
 
