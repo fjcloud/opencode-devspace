@@ -64,7 +64,7 @@ oc tag <app>-build/<image>:stage  <app>-build/<image>:prod
 
 ## Containerization
 
-- Every app must have a `Containerfile` or `Dockerfile` in `src/`
+- Every app must have a `Dockerfile` in `src/`
 - Use multi-stage builds: separate build image from runtime image to reduce attack surface
 - Base on `registry.access.redhat.com/ubi9/ubi-minimal` or appropriate UBI images — trusted, tested, supported
 - Always use the latest UBI tag to include all security fixes
