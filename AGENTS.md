@@ -46,7 +46,17 @@ for ns in <app>-dev <app>-stage <app>-prod; do
 done
 ```
 
-Image reference in Deployments: `image-registry.openshift-image-registry.svc:5000/<app>-build/<image>:<tag>`
+Every Deployment MUST use the `image.openshift.io/triggers` annotation to auto-deploy when an ImageStream tag is updated:
+
+```yaml
+metadata:
+  annotations:
+    image.openshift.io/triggers: >-
+      [{"from":{"kind":"ImageStreamTag","name":"<image>:<tag>","namespace":"<app>-build"},
+        "fieldPath":"spec.template.spec.containers[?(@.name==\"<container>\")].image"}]
+```
+
+This way the image field is automatically resolved and updated by OpenShift — no hardcoded registry URLs.
 
 Promotion is done by tagging, not rebuilding:
 
@@ -54,6 +64,8 @@ Promotion is done by tagging, not rebuilding:
 oc tag <app>-build/<image>:latest <app>-build/<image>:stage
 oc tag <app>-build/<image>:stage  <app>-build/<image>:prod
 ```
+
+When a tag is updated, the trigger annotation rolls out the new image automatically.
 
 ## OpenShift conventions
 
