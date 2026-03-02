@@ -14,8 +14,6 @@ spec:
   dcgm:
     enabled: true
   dcgmExporter:
-    config:
-      name: console-plugin-nvidia-gpu
     enabled: true
     serviceMonitor:
       enabled: true
