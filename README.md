@@ -10,10 +10,6 @@ The stack requires sufficient CPU/memory workers plus a GPU node:
 - **GPU**: 1x `g6e.xlarge` (NVIDIA L40S) — tainted to reserve it for inference only.
 
 ```bash
-# Scale the default worker pool (m7i.xlarge, 5 nodes)
-rosa edit machine-pool -c <cluster-name> --replicas 5 <worker-pool-name>
-
-# Create a dedicated GPU pool with a taint
 rosa create machine-pool -c <cluster-name> \
   --name gpu \
   --replicas 1 \
