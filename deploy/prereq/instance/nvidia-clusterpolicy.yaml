@@ -53,3 +53,12 @@ spec:
         timeoutSeconds: 0
     virtualTopology:
       config: ""
+  gfd:
+    enabled: true
+  nodeStatusExporter:
+    enabled: true
+  operator:
+    defaultRuntime: crio
+    use_ocp_driver_toolkit: true
+  toolkit:
+    enabled: true
