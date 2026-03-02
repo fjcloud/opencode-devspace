@@ -23,7 +23,9 @@ commands:
       commandLine: >-
         curl -fsSL https://opencode.ai/install | bash &&
         grep -q '.opencode/bin' "$HOME/.bashrc" 2>/dev/null ||
-        echo 'export PATH="$HOME/.opencode/bin:$PATH"' >> "$HOME/.bashrc"
+        echo 'export PATH="$HOME/.opencode/bin:$PATH"' >> "$HOME/.bashrc" &&
+        mkdir -p "$HOME/.local/share/opencode" &&
+        echo '{"vllm":{"type":"api","key":"sk-local"}}' > "$HOME/.local/share/opencode/auth.json"
       workingDir: ${PROJECT_SOURCE}
 events:
   postStart:

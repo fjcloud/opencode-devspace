@@ -1,6 +1,20 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "opencode/minimax-m2.5-free",
+  "provider": {
+    "vllm": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "vLLM (cluster)",
+      "options": {
+        "baseURL": "http://qwen35-predictor.llm-inference.svc.cluster.local/v1"
+      },
+      "models": {
+        "qwen35": {
+          "name": "Qwen3.5-35B-A3B-AWQ"
+        }
+      }
+    }
+  },
+  "model": "vllm/qwen35",
   "autoupdate": true,
   "instructions": ["AGENTS.md"]
 }

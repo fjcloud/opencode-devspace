@@ -2,20 +2,46 @@
 
 ## Prerequisites
 
-Install the Dev Spaces operator and create the instance:
+### 1. Install operators
 
 ```bash
-# 1. Install the operator
 oc apply -k https://github.com/fjcloud/opencode-devspace/deploy/prereq/operator
+```
 
-# 2. Wait for the operator to be ready (CRD + webhook endpoint)
+Wait for all operators to be ready:
+
+```bash
 oc wait deployment/devspaces-operator -n openshift-operators --for=condition=Available --timeout=300s
+oc wait deployment/nfd-controller-manager -n openshift-nfd --for=condition=Available --timeout=300s
+oc wait deployment/gpu-operator -n nvidia-gpu-operator --for=condition=Available --timeout=300s
+oc wait deployment/rhods-operator -n redhat-ods-operator --for=condition=Available --timeout=300s
+```
 
-# 3. Create the instance
+### 2. Create instances
+
+```bash
 oc apply -k https://github.com/fjcloud/opencode-devspace/deploy/prereq/instance
+```
 
-# 4. Wait for the instance to be ready
+Wait for instances to be ready:
+
+```bash
 oc wait checluster/devspaces -n openshift-operators --for=jsonpath='{.status.chePhase}'=Active --timeout=300s
+oc wait nodefeaturediscovery/nfd-instance -n openshift-nfd --for=condition=Available --timeout=300s
+oc wait clusterpolicy/gpu-cluster-policy --for=condition=Ready --timeout=600s
+oc wait datasciencecluster/default-dsc --for=condition=Available --timeout=300s
+```
+
+### 3. Deploy the LLM inference service
+
+```bash
+oc apply -k https://github.com/fjcloud/opencode-devspace/deploy/prereq/inference
+```
+
+Wait for the model to be ready (first start downloads the model weights):
+
+```bash
+oc wait inferenceservice/qwen35 -n llm-inference --for=condition=Ready --timeout=900s
 ```
 
 ## Launch

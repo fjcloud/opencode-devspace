@@ -1,0 +1,31 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: qwen35
+  namespace: llm-inference
+  annotations:
+    serving.kserve.io/deploymentMode: RawDeployment
+  labels:
+    opendatahub.io/dashboard: "true"
+spec:
+  predictor:
+    minReplicas: 1
+    maxReplicas: 1
+    tolerations:
+      - key: nvidia.com/gpu
+        operator: Equal
+        value: present
+        effect: NoSchedule
+    model:
+      modelFormat:
+        name: vLLM
+      runtime: vllm-cuda-qwen
+      resources:
+        requests:
+          nvidia.com/gpu: "1"
+          memory: 8Gi
+          cpu: 500m
+        limits:
+          nvidia.com/gpu: "1"
+          memory: 24Gi
+          cpu: "2"

@@ -1,0 +1,55 @@
+apiVersion: nvidia.com/v1
+kind: ClusterPolicy
+metadata:
+  name: gpu-cluster-policy
+spec:
+  daemonsets:
+    rollingUpdate:
+      maxUnavailable: "1"
+    tolerations:
+      - effect: NoSchedule
+        key: nvidia-gpu-only
+        operator: Exists
+    updateStrategy: RollingUpdate
+  dcgm:
+    enabled: true
+  dcgmExporter:
+    config:
+      name: console-plugin-nvidia-gpu
+    enabled: true
+    serviceMonitor:
+      enabled: true
+  devicePlugin:
+    config:
+      default: ""
+      name: ""
+    enabled: true
+  driver:
+    certConfig:
+      name: ""
+    enabled: true
+    kernelModuleConfig:
+      name: ""
+    kernelModuleType: auto
+    licensingConfig:
+      configMapName: ""
+      nlsEnabled: false
+    repoConfig:
+      configMapName: ""
+    upgradePolicy:
+      autoUpgrade: true
+      drain:
+        deleteEmptyDir: false
+        enable: false
+        force: false
+        timeoutSeconds: 300
+      maxParallelUpgrades: 1
+      maxUnavailable: 25%
+      podDeletion:
+        deleteEmptyDir: false
+        force: false
+        timeoutSeconds: 300
+      waitForCompletion:
+        timeoutSeconds: 0
+    virtualTopology:
+      config: ""
