@@ -4,13 +4,16 @@
 
 ### 0. Cluster sizing (ROSA)
 
-The stack requires **at least 5 worker nodes** (CPU) plus **1 GPU node**. The operators (Dev Spaces, OpenShift AI, NVIDIA, NFD) and their workloads need enough vCPU and memory — 3 workers is not sufficient.
+The stack requires sufficient CPU/memory workers plus a GPU node:
+
+- **Workers**: 5x `m7i.xlarge` (4 vCPU, 16 GiB each) — or fewer larger nodes (e.g. 3x `m7i.2xlarge`). 3 small workers is not sufficient for the full operator stack.
+- **GPU**: 1x `g6e.xlarge` (NVIDIA L40S) — tainted to reserve it for inference only.
 
 ```bash
-# Scale the default worker pool to 5 nodes minimum
+# Scale the default worker pool (m7i.xlarge, 5 nodes)
 rosa edit machine-pool -c <cluster-name> --replicas 5 <worker-pool-name>
 
-# Create a dedicated GPU pool with a taint to reserve it for inference only
+# Create a dedicated GPU pool with a taint
 rosa create machine-pool -c <cluster-name> \
   --name gpu \
   --replicas 1 \
