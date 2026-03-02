@@ -2,6 +2,24 @@
 
 ## Prerequisites
 
+### 0. GPU machine pool (ROSA)
+
+The LLM inference service requires a GPU node. On ROSA, create a machine pool with at least a `g6e.xlarge` instance:
+
+```bash
+rosa create machine-pool -c <cluster-name> \
+  --name gpu \
+  --replicas 1 \
+  --instance-type g6e.xlarge \
+  --availability-zone <az>
+```
+
+Wait for the node to be ready:
+
+```bash
+oc wait node -l node.kubernetes.io/instance-type=g6e.xlarge --for=condition=Ready --timeout=600s
+```
+
 ### 1. Install operators
 
 ```bash
