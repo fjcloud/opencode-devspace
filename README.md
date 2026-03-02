@@ -2,19 +2,24 @@
 
 ## Prerequisites
 
-### 0. GPU machine pool (ROSA)
+### 0. Cluster sizing (ROSA)
 
-The LLM inference service requires a GPU node. On ROSA, create a machine pool with at least a `g6e.xlarge` instance:
+The stack requires **at least 5 worker nodes** (CPU) plus **1 GPU node**. The operators (Dev Spaces, OpenShift AI, NVIDIA, NFD) and their workloads need enough vCPU and memory — 3 workers is not sufficient.
 
 ```bash
+# Scale the default worker pool to 5 nodes minimum
+rosa edit machine-pool -c <cluster-name> --replicas 5 <worker-pool-name>
+
+# Create a dedicated GPU pool with a taint to reserve it for inference only
 rosa create machine-pool -c <cluster-name> \
   --name gpu \
   --replicas 1 \
   --instance-type g6e.xlarge \
-  --availability-zone <az>
+  --availability-zone <az> \
+  --taints 'nvidia.com/gpu=present:NoSchedule'
 ```
 
-Wait for the node to be ready:
+Wait for all nodes to be ready:
 
 ```bash
 oc wait node -l node.kubernetes.io/instance-type=g6e.xlarge --for=condition=Ready --timeout=600s
@@ -47,7 +52,7 @@ Wait for instances to be ready:
 oc wait checluster/devspaces -n openshift-operators --for=jsonpath='{.status.chePhase}'=Active --timeout=300s
 oc wait nodefeaturediscovery/nfd-instance -n openshift-nfd --for=condition=Available --timeout=300s
 oc wait clusterpolicy/gpu-cluster-policy --for=condition=Ready --timeout=600s
-oc wait datasciencecluster/default-dsc --for=condition=Available --timeout=300s
+oc wait datasciencecluster/default-dsc --for=condition=Ready --timeout=300s
 ```
 
 ### 3. Deploy the LLM inference service
