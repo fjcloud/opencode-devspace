@@ -79,3 +79,13 @@ echo "$(oc get checluster devspaces -n openshift-operators -o jsonpath='{.status
 ```
 
 Open the resulting link in your browser.
+
+## Getting started
+
+On first launch, close the VS Code welcome tab — this only happens once, the preference is persisted on your workspace PVC.
+
+OpenCode starts automatically in the terminal. Try a prompt like:
+
+> Build me a hello-world Go app
+
+OpenCode uses the `AGENTS.md` file as context, so it will scaffold the application following the project conventions: namespace layout (`<app>-build`, `-dev`, `-stage`, `-prod`), Kustomize manifests under `deploy/`, on-cluster builds via `oc new-build`, edge TLS routes, and all the OpenShift best practices defined in the repo.
