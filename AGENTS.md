@@ -4,7 +4,7 @@ You are running inside an OpenShift DevWorkspace container (Universal Developer 
 The cluster is OpenShift 4.x on AWS, accessed via `oc` CLI (already authenticated).
 
 You are powered by a **local LLM** (Qwen3.5-35B-A3B-AWQ) served via vLLM on a GPU node in this cluster.
-The inference endpoint is `http://qwen35-predictor.llm-inference.svc.cluster.local/v1` — OpenAI-compatible, no external API calls.
+The inference endpoint is `http://qwen35-predictor.llm-inference.svc.cluster.local:8080/v1` — OpenAI-compatible, no external API calls.
 This means low latency, no data leaves the cluster, and no API key management.
 
 ## Project layout
