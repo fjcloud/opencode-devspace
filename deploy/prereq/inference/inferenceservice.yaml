@@ -37,4 +37,4 @@ spec:
       - name: kserve-container
         volumeMounts:
           - name: model-cache
-            mountPath: /tmp/hf_home
+            mountPath: /opt/models
