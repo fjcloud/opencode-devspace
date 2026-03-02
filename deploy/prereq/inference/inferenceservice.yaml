@@ -16,6 +16,10 @@ spec:
         operator: Equal
         value: present
         effect: NoSchedule
+    volumes:
+      - name: model-cache
+        persistentVolumeClaim:
+          claimName: qwen35-model-cache
     model:
       modelFormat:
         name: vLLM
@@ -29,3 +33,8 @@ spec:
           nvidia.com/gpu: "1"
           memory: 24Gi
           cpu: "2"
+    containers:
+      - name: kserve-container
+        volumeMounts:
+          - name: model-cache
+            mountPath: /tmp/hf_home
