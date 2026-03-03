@@ -33,8 +33,6 @@ spec:
           nvidia.com/gpu: "1"
           memory: 24Gi
           cpu: "2"
-    containers:
-      - name: kserve-container
-        volumeMounts:
-          - name: model-cache
-            mountPath: /opt/models
+      volumeMounts:
+        - name: model-cache
+          mountPath: /opt/models
