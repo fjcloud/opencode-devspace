@@ -20,6 +20,14 @@
     }
   },
   "model": "qwen35/qwen35",
+  "agent": {
+    "plan": {
+      "temperature": 0.1
+    },
+    "build": {
+      "temperature": 0.3
+    }
+  },
   "autoupdate": true,
   "instructions": ["AGENTS.md"]
 }
