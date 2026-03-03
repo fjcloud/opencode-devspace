@@ -50,7 +50,7 @@ Wait for instances to be ready:
 ```bash
 oc wait checluster/devspaces -n openshift-operators --for=jsonpath='{.status.chePhase}'=Active --timeout=300s
 oc wait nodefeaturediscovery/nfd-instance -n openshift-nfd --for=condition=Available --timeout=300s
-oc wait clusterpolicy/gpu-cluster-policy --for=condition=Ready --timeout=600s
+oc wait pod -l app=nvidia-operator-validator -n nvidia-gpu-operator --for=condition=Ready --timeout=600s
 oc wait datasciencecluster/default-dsc --for=condition=Ready --timeout=300s
 ```
 
