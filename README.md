@@ -80,8 +80,12 @@ Open the resulting link in your browser.
 
 On first launch, close the VS Code welcome tab — this only happens once, the preference is persisted on your workspace PVC.
 
-OpenCode starts automatically in the terminal. Try a prompt like:
+OpenCode starts automatically in the terminal. The recommended workflow uses two agents:
 
-> Build me a hello-world Go app
+1. **Plan first** — press `Tab` to switch to the **plan** agent. Describe what you want to build, e.g.:
 
-OpenCode uses the `AGENTS.md` file as context, so it will scaffold the application following the project conventions: namespace layout (`<app>-build`, `-dev`, `-stage`, `-prod`), Kustomize manifests under `deploy/`, on-cluster builds via `oc new-build`, edge TLS routes, and all the OpenShift best practices defined in the repo.
+   > Deploy a hello-world Go app on OpenShift
+
+   The plan agent (low temperature, focused reasoning) will outline the project structure, namespaces, manifests, and build strategy based on `AGENTS.md` conventions.
+
+2. **Then build** — once the plan looks good, press `Tab` again to switch to the **build** agent. It will implement the plan: scaffold the code under `src/`, generate Kustomize manifests in `deploy/`, create the `oc new-build` pipeline, edge TLS routes, and follow the full namespace layout (`<app>-build`, `-dev`, `-stage`, `-prod`).
