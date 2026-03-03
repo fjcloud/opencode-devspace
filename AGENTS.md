@@ -98,6 +98,37 @@ This way the image field is automatically resolved and updated by OpenShift — 
 - Expose only necessary ports
 - One process per container — no supervisor hacks
 
+### Multi-stage Dockerfile pattern (MANDATORY)
+
+OpenShift build containers run as a random UID. You CANNOT write to arbitrary paths like `/app`, `/go-webserver`, or `/output` in the builder stage — they will fail with "permission denied". Always build into a **writable path** (`/tmp` or the current workdir) and copy from there.
+
+Correct pattern (Go example):
+
+```dockerfile
+# ---- build stage ----
+FROM registry.access.redhat.com/ubi9/go-toolset:1.21 AS builder
+WORKDIR /opt/app-root/src
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ./app .
+
+# ---- runtime stage ----
+FROM registry.access.redhat.com/ubi9/ubi-minimal:latest
+WORKDIR /app
+COPY --from=builder /opt/app-root/src/app .
+RUN chown -R 1001:0 /app && chmod -R g=u /app
+EXPOSE 8080
+USER 1001
+CMD ["./app"]
+```
+
+Key rules:
+- **Builder stage**: use the `WORKDIR` provided by the base image (e.g. `/opt/app-root/src` for UBI go-toolset). Build the binary into the current directory (`./app`), NOT into a root-level path like `/app` or `/binary`
+- **Runtime stage**: `COPY --from=builder` using the full path from the builder's workdir
+- **Never** `RUN ... -o /some-root-path` in a builder stage — the random UID cannot write there
+- Apply `chown 1001:0` and `chmod g=u` on all runtime directories before switching to `USER 1001`
+
 ### OpenShift UID and file permissions
 
 OpenShift runs containers with a **random UID** (restricted SCC). Most permission errors come from files/directories in the image that only root can write to. Every Dockerfile MUST handle this:
