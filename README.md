@@ -36,6 +36,14 @@ Wait for all operators to be ready:
 oc wait deployment/devspaces-operator -n openshift-operators --for=condition=Available --timeout=300s
 oc wait deployment/nfd-controller-manager -n openshift-nfd --for=condition=Available --timeout=300s
 oc wait deployment/gpu-operator -n nvidia-gpu-operator --for=condition=Available --timeout=300s
+```
+
+Approve the RHOAI install plan (subscription is `Manual` to prevent auto-upgrade to broken 3.3.0):
+
+```bash
+oc wait subscription/rhods-operator -n redhat-ods-operator --for=condition=InstallPlanPending --timeout=120s
+oc patch installplan $(oc get installplan -n redhat-ods-operator -o jsonpath='{.items[0].metadata.name}') \
+  -n redhat-ods-operator --type merge -p '{"spec":{"approved":true}}'
 oc wait deployment/rhods-operator -n redhat-ods-operator --for=condition=Available --timeout=300s
 ```
 
