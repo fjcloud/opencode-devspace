@@ -5,7 +5,7 @@ metadata:
   namespace: redhat-ods-operator
 spec:
   channel: fast-3.x
-  installPlanApproval: Automatic
+  installPlanApproval: Manual
   name: rhods-operator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
