@@ -38,7 +38,7 @@ oc wait deployment/nfd-controller-manager -n openshift-nfd --for=condition=Avail
 oc wait deployment/gpu-operator -n nvidia-gpu-operator --for=condition=Available --timeout=300s
 ```
 
-Approve the RHOAI install plan (subscription is `Manual` to prevent auto-upgrade to broken 3.3.0):
+Approve the RHOAI install plan (subscription is `Manual` to prevent auto-upgrade to 3.3.0):
 
 ```bash
 oc wait subscription/rhods-operator -n redhat-ods-operator --for=condition=InstallPlanPending --timeout=120s
