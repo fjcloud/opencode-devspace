@@ -26,7 +26,8 @@ commands:
         echo 'export PATH="$HOME/.opencode/bin:$PATH"' >> "$HOME/.bashrc" &&
         mkdir -p ${PROJECT_SOURCE}/.opencode/plugins &&
         git clone https://github.com/hawkeyexl/opencode-ralph-loop.git
-        ${PROJECT_SOURCE}/.opencode/plugins/opencode-ralph-loop 2>/dev/null || true
+        ${PROJECT_SOURCE}/.opencode/plugins/opencode-ralph-loop 2>/dev/null || true &&
+        ln -sf opencode-ralph-loop/ralph-loop.ts ${PROJECT_SOURCE}/.opencode/plugins/ralph-loop.ts
       workingDir: ${PROJECT_SOURCE}
 events:
   postStart:
