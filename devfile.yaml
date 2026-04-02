@@ -23,7 +23,10 @@ commands:
       commandLine: >-
         curl -fsSL https://opencode.ai/install | bash &&
         grep -q '.opencode/bin' "$HOME/.bashrc" 2>/dev/null ||
-        echo 'export PATH="$HOME/.opencode/bin:$PATH"' >> "$HOME/.bashrc"
+        echo 'export PATH="$HOME/.opencode/bin:$PATH"' >> "$HOME/.bashrc" &&
+        mkdir -p ${PROJECT_SOURCE}/.opencode/plugins &&
+        git clone https://github.com/hawkeyexl/opencode-ralph-loop.git
+        ${PROJECT_SOURCE}/.opencode/plugins/opencode-ralph-loop 2>/dev/null || true
       workingDir: ${PROJECT_SOURCE}
 events:
   postStart:
