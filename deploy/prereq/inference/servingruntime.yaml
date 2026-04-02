@@ -5,7 +5,7 @@ metadata:
   namespace: llm-inference
   annotations:
     opendatahub.io/recommended-accelerators: '["nvidia.com/gpu"]'
-    openshift.io/display-name: vLLM CUDA - Qwen3.5-35B-A3B-AWQ
+    openshift.io/display-name: vLLM CUDA - Qwen3.5-35B-A3B-FP8
   labels:
     opendatahub.io/dashboard: "true"
 spec:
@@ -21,9 +21,9 @@ spec:
         - vllm.entrypoints.openai.api_server
       args:
         - --port=8080
-        - --model=cyankiwi/Qwen3.5-35B-A3B-AWQ-4bit
+        - --model=RedHatAI/Qwen3.5-35B-A3B-FP8-dynamic
         - --served-model-name={{.Name}}
-        - --max-model-len=262144
+        - --max-model-len=32768
         - --dtype=auto
         - --gpu-memory-utilization=0.95
         - --max-num-seqs=16

@@ -3,16 +3,16 @@
   "provider": {
     "qwen35": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "Qwen3.5-35B-A3B-AWQ",
+      "name": "Qwen3.5-35B-A3B-FP8",
       "options": {
         "baseURL": "http://qwen35-predictor.llm-inference.svc.cluster.local:8080/v1",
         "apiKey": "dummy"
       },
       "models": {
         "qwen35": {
-          "name": "Qwen3.5-35B-A3B-AWQ-4bit",
+          "name": "Qwen3.5-35B-A3B-FP8-dynamic",
           "limit": {
-            "context": 262144,
+            "context": 32768,
             "output": 8192
           }
         }
