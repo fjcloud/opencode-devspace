@@ -71,7 +71,7 @@ oc wait inferenceservice/qwen35 -n llm-inference --for=condition=Ready --timeout
 Get your workspace URL:
 
 ```bash
-echo "$(oc get checluster devspaces -n openshift-operators -o jsonpath='{.status.cheURL}')/#https://github.com/fjcloud/opencode-devspace"
+echo "$(oc get checluster devspaces -n openshift-operators -o jsonpath='{.status.cheURL}')/#https://github.com/fjcloud/opencode"
 ```
 
 Open the resulting link in your browser.
