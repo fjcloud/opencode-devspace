@@ -63,7 +63,7 @@ oc apply -k https://github.com/fjcloud/opencode-devspace/deploy/prereq/inference
 Wait for the model to be ready (first start downloads the model weights):
 
 ```bash
-oc wait inferenceservice/qwen35 -n llm-inference --for=condition=Ready --timeout=900s
+oc wait inferenceservice/gemma4 -n llm-inference --for=condition=Ready --timeout=900s
 ```
 
 ## Launch

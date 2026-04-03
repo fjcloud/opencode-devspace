@@ -1,7 +1,7 @@
 apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 metadata:
-  name: qwen35
+  name: gemma4
   namespace: llm-inference
   annotations:
     serving.kserve.io/deploymentMode: RawDeployment
@@ -21,11 +21,11 @@ spec:
     volumes:
       - name: model-cache
         persistentVolumeClaim:
-          claimName: qwen35-model-cache
+          claimName: model-cache
     model:
       modelFormat:
         name: vLLM
-      runtime: vllm-cuda-qwen
+      runtime: vllm-cuda-gemma4
       resources:
         requests:
           nvidia.com/gpu: "1"
