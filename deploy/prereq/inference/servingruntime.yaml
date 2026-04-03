@@ -14,7 +14,7 @@ spec:
     prometheus.io/port: "8080"
   containers:
     - name: kserve-container
-      image: docker.io/vllm/vllm-openai:nightly
+      image: docker.io/vllm/vllm-openai:latest
       command:
         - python3
         - -m
