@@ -66,6 +66,8 @@ Wait for the model to be ready (first start downloads the model weights):
 oc wait inferenceservice/qwen35 -n llm-inference --for=condition=Ready --timeout=900s
 ```
 
+The NVIDIA DCGM dashboard is automatically deployed to the OpenShift console. View GPU metrics in **Observe > Dashboards > NVIDIA DCGM Exporter Dashboard**.
+
 ## Launch
 
 Get your workspace URL:

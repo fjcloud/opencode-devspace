@@ -10,3 +10,14 @@ resources:
   # OpenShift AI
   - rhoai-dsci.yaml
   - rhoai-dsc.yaml
+
+configMapGenerator:
+  - name: nvidia-dcgm-exporter-dashboard
+    namespace: openshift-config-managed
+    files:
+      - dcgm-exporter-dashboard.json
+    options:
+      disableNameSuffixHash: true
+      labels:
+        console.openshift.io/dashboard: "true"
+        console.openshift.io/odc-dashboard: "true"
