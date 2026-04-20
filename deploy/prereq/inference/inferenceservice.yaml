@@ -1,7 +1,7 @@
 apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 metadata:
-  name: qwen35
+  name: qwen36
   namespace: llm-inference
   annotations:
     serving.kserve.io/deploymentMode: RawDeployment
@@ -21,7 +21,7 @@ spec:
     volumes:
       - name: model-cache
         persistentVolumeClaim:
-          claimName: qwen35-model-cache
+          claimName: qwen36-model-cache
     model:
       modelFormat:
         name: vLLM
