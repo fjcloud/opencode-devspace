@@ -91,3 +91,7 @@ OpenCode starts automatically in the terminal. The recommended workflow uses two
    The plan agent (low temperature, focused reasoning) will outline the project structure, namespaces, manifests, and build strategy based on `AGENTS.md` conventions.
 
 2. **Then build** — once the plan looks good, press `Tab` again to switch to the **build** agent. It will implement the plan: scaffold the code under `src/`, generate Kustomize manifests in `deploy/`, create the `oc new-build` pipeline, edge TLS routes, and follow the full namespace layout (`<app>-build`, `-dev`, `-stage`, `-prod`).
+
+## Demo
+
+[![asciicast](https://asciinema.org/a/gUVrYQniGqwu5BDk.svg)](https://asciinema.org/a/gUVrYQniGqwu5BDk)
