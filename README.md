@@ -94,4 +94,4 @@ OpenCode starts automatically in the terminal. The recommended workflow uses two
 
 ## Demo
 
-[![asciicast](https://asciinema.org/a/gUVrYQniGqwu5BDk.svg)](https://asciinema.org/a/gUVrYQniGqwu5BDk)
+[![demo](https://asciinema.org/a/gUVrYQniGqwu5BDk.png)](https://asciinema.org/a/gUVrYQniGqwu5BDk)
